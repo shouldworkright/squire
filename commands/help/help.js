@@ -44,7 +44,7 @@ module.exports = {
 			.addFields(
 				{ name: `/cheer`, value: `Returns a randomly selected message of encouragement.` },
 				{ name: `/jeer`, value: `Returns a randomly selected insult.` },
-				{ name: `/knave`, value: `Express righteous indignation!` },
+				{ name: `/knave`, value: `Express righteous indignation.` },
 			)
 
 		// Buttons for switching between pages
