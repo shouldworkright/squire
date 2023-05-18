@@ -25,6 +25,7 @@ module.exports = {
 				{ name: `/roll`, value: `A dice roller that displays the outcome of all individual dice rolls and their sum. To use, enter the number of dice and the number of sides for each die rolled. (ex: <# of dice>d<# of sides> => 1d20, 4d6, 8d10, etc.)` },
 				{ name: `(optional) modifier`, value: `Adds or subtracts from the sum. To use, enter the modifier as a dice roll or whole number. (ex: +10, -3, +1d6, -1d4, etc.)`, inline: true },
 				{ name: `(optional) keep`, value: `When rolling multiple dice, keeps the X highest rolls. To use, enter the number of rolls you want kept. (ex: 1, 5, 12, etc.)`, inline: true },
+				{ name: `/cgen`, value: `Generates a random D&D 5e character. Includes the character's name, alignment, race, class, ability scores, and a brief backstory.` },
 			)
 
 		// The page for all spell/action commands
