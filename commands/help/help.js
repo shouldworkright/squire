@@ -5,8 +5,7 @@ module.exports = {
 		.setName(`help`)
 		.setDescription(`Returns a list of basic commands.`),
 	async execute(interaction) {
-
-		// This is the first page that appears when a user enters /help
+		// This is the help manual's table of contents
 		const embedIndex = new EmbedBuilder()
 			.setColor(`Blue`)
 			.setTitle(`Help Menu`)
@@ -48,7 +47,7 @@ module.exports = {
 				{ name: `/knave`, value: `Express righteous indignation!` },
 			)
 
-		// Footer buttons that allows user to switch between pages
+		// Buttons for switching between pages
 		const button  = new ActionRowBuilder()
 			.addComponents(
 				new ButtonBuilder()
@@ -76,22 +75,21 @@ module.exports = {
 		const collector = await message.createMessageComponentCollector();
 
 		collector.on(`collect`, async i => {
-
-			// Serve 'General' page when user clicks associated button
+			// Serve 'General' page on button click
 			if (i.customId === `general`) {
 				if (i.user.id !== interaction.user.id)
 					return await i.reply({ content: `Only ${interaction.user.tag} can use these buttons.`, ephemeral: true })
 				await i.update ({ embeds: [embedGeneral], components: [button] })
 			}
 
-			// Serve 'Spells & Actions' page when user clicks associated button
+			// Serve 'Spells & Actions' page on button click
 			if (i.customId === `spells`) {
 				if (i.user.id !== interaction.user.id)
 					return await i.reply({ content: `Only ${interaction.user.tag} can use these buttons.`, ephemeral: true })
 				await i.update ({ embeds: [embedSpells], components: [button] })
 			}
 
-			// Serve `Other Commands` page when user clicks associated button
+			// Serve `Other Commands` page on button click
 			if (i.customId === `other`) {
 				if (i.user.id !== interaction.user.id)
 					return await i.reply({ content: `Only ${interaction.user.tag} can use these buttons.`, ephemeral: true })

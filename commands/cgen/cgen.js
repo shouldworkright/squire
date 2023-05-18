@@ -8,12 +8,11 @@ function getRandInt(min, max) {
 }
 
 /**
- * Returns a randomly generated character name.
+ * Returns a randomly generated character name
  * @async
  * @returns	{String}
  */
 async function getName() {
-	// Send a request to the OpenAI API to generate the character name
 	const configuration = new Configuration({
 		apiKey: tokenOpenAI,
 	});
@@ -25,17 +24,17 @@ async function getName() {
 		temperature: 0.4,
 		top_p: 1,
 	});
-	const name = response.data.choices[0].text.replace(/(\n)/gm,"");
+	const name = response.data.choices[0].text;
 	return name;
 }
 
 /**
- * Returns a random character alignment, race and class.
+ * Returns a random character alignment, race and class
  * @async
  * @returns	{Object}
  */
 async function getDetails() {
-	// Retrieve JSON data from API
+	// Get D&D rulebook information from GraphQL API
 	const endpoint = `https://www.dnd5eapi.co/graphql`;
 	const query = `
 		query {
@@ -64,16 +63,15 @@ async function getDetails() {
 		race: race,
 		spec: spec
 	};
-
 	return details;
 }
 
 /**
- * Returns randomly generated ability scores.
+ * Returns randomly generated ability scores
  * @returns	{Object}
  */
 function getStats() {
-	// Rolls based on 4d6 method (roll 4d6, drop the lowest roll)
+	// Rolls are based on 4d6 method (roll 4d6, drop the lowest roll)
 	const stats = {
 		"STR": getRandInt(3, 18),
 		"DEX": getRandInt(3, 18),
@@ -86,7 +84,7 @@ function getStats() {
 }
 
 /**
- * Returns a randomly generated character backstory.
+ * Returns a randomly generated character backstory
  * @async
  * @param	{String}	name		A character's name
  * @param	{Object}	details		A character's alignmnet, race, and class
@@ -105,8 +103,7 @@ async function getStory(name, details) {
 		temperature: 0.4,
 		top_p: 1,
 	});
-	const story = response.data.choices[0].text.replace(/(\t|\n)/gm,"").trimStart().toString();
-	console.log(story);
+	const story = response.data.choices[0].text.replace(/(\n)/gm,"");
 	return story;
 }
 
@@ -115,10 +112,9 @@ module.exports = {
 		.setName(`cgen`)
 		.setDescription(`Returns a randomly generated D&D 5e character.`),
 	async execute(interaction) {
-	
 		// If a bot doesn't reply within 3 seconds of receiving a command, the command times out.
 		// This prevents that from happening.
-		await interaction.reply({ content: `A legendary hero approaches...`, ephemeral: true });
+		await interaction.reply({ content: `(Loading) A legendary hero approaches...`, ephemeral: true });
 		
 		// Generate character information
 		const name = await getName();

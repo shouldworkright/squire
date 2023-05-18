@@ -1,41 +1,32 @@
 const { SlashCommandBuilder } = require(`discord.js`);
 
-/**
- * Returns a randomly generated number in-between or equal to the min/max
- * @param	{Number}	min	The minimum value that can be generated
- * @param	{Number}	max	The maximum value that can be generated
- * @return	{Number} 
- */
 function getRandNum(min, max) {
 	return Math.floor(Math.random() * (max-min+1)) + min;
 }
 
 /**
- * Applies an operator to 2 numbers
- * @param	{String}	op	Operator to be applied
+ * Returns the sum/difference of two numbers based on the provided operator
+ * @param	{String}	op	Operator to be applied (+/-)
  * @param	{Number}	x	First number
  * @param	{Number}	y	Second number
- * @return	{Number}
+ * @returns	{Number}
  */
 function applyOperator(op, x, y) {
-	
-	const supportedOperators =
-	{
+	const supportedOperators = {
 		"+": (x, y) => x + y,
 		"-": (x, y) => x - y
-	}
+	};
 	if (op in supportedOperators)
 		return supportedOperators[op](x, y);
 }
 
 /**
- * Returns an array of randomly generated numbers
+ * Returns an array of randomly generated integers
  * @param	{String}	dice	Specifies the quantity of dice, and the number of sides each die has
- * @return	{Array}
+ * @returns	{Object}		An array of positive integers
  */
 function getRolls(dice) {
-
-	// Parse 'dice' string to get die-rolling info
+	// Parse 'dice' string to get die-rolling information
 	var re = new RegExp("[0-9]+d[0-9]+");
 	if (dice.search(re) != -1) {
 		var parsed = dice.split(`d`);
@@ -45,13 +36,12 @@ function getRolls(dice) {
 	else if (isNaN(dice))
 		throw error;
 	
-	// Generate random number array
+	// Generate random integer array
 	var arr = [];
 	for (let i = 0; i < quant; i++) {i
 		let cv = getRandNum(1, sides);
 		arr[i] = cv;
 	}
-
 	return arr;
 }
 
@@ -59,55 +49,55 @@ function getRolls(dice) {
  * Shortens an array of numbers to the 'n' highest numbers
  * @param	{Array}		arr	An array of numbers
  * @param	{Number}	n	The amount of highest numbers returned
- * @return	{Array}
+ * @returns	{Array}
  */
 function getHighest(arr, n) {
-
-	// Sort array in descending order, slice off top 'n' numbers
+	// Sort array in descending order, preserve the top 'n' numbers
 	var arr = arr.sort((a, b) => a < b ? 1 : a > b ? -1 : 0);
 	const arrSliced = arr.slice(0, n);
 	return arrSliced;
 }
 
-/*
- * Takes a number/dice roll and returns a modifier string of format '+/-{Number}'
- * @param	{String}	Modifier string
- * @return	{String}
+/**
+ * Takes a raw modifier string and returns a normalized dice roll modifier
+ * @param	{String}	mod	The raw modifier string (either a +/- integer or a +/- dice roll)
+ * @returns	{String}		The normalized dice roll modifier string (a +/- integer)
  */
 function getMod(mod) {
-	
-	// Verify modifier is of format '+/-{Number}d{Number}' or '+/-{Number}'
+	// Check if modifier string is formatted correctly '+/-{Number}d{Number}' or '+/-{Number}'
 	const re1 = new RegExp("^(\\+|-)[0-9]+d[0-9]+");
 	const re2 = new RegExp("^(\\+|-)[0-9]+");
 	if (mod.search(re1) != -1) {
-		// If modifier is a dice roll, parse string and get roll
+		// If modifier is a dice roll, parse string and roll die
 		var op = mod[0];
 		var dice = mod.substring(1);
 		mod = op + getRolls(dice);
 		return mod;
 	}
 	else if (mod.search(re2) != -1)
+		// If modifier is a +/- integer, return the modifier
 		return mod;
 	else
 		throw error;
 }
 
 /**
- * Applies a modifier to the sum of an array, returns result as a readable string
- * @param	{Array}		arr	An array of numbers
- * @param	{String}	mod	A modifier (+/-10, +/-2, etc.) to be applied to the sum
- * @return	{String}
+ * Returns a string containing a series of dice rolls, and their sum
+ * @param	{Object}	arr	An array of dice rolls (positive integers)
+ * @param	{String}	mod	A modifier (+/-10, +/-2, etc.) to be applied to the roll sum
+ * @returns	{String}		A series of dice rolls and all applied modifiers
  */
 function getResult(arr, mod) {
-
+	// Get sum of all dice rolls
 	var sum = arr.reduce((pv, cv) => pv + cv, 0);
 
+	// If a modifier has been passed, parse raw modifier string and apply to roll sum
 	if (mod != null) {
 		var modNum = parseInt(mod.substring(1));
 		sum = applyOperator(mod[0], sum, modNum);
 	}
 
-	// Construct reply string
+	// Construct return string
 	var result = ``;
 	for (let i = 0; i < arr.length; i++) {
 		if (i == arr.length-1 && mod != null)
@@ -117,7 +107,6 @@ function getResult(arr, mod) {
 		else
 			result += `(${arr[i]}) + `;
 	}
-
 	return result;
 }
 
@@ -138,20 +127,20 @@ module.exports = {
 			.setDescription(`Keeps the X highest rolls.`)
 			.setRequired(false)),
 	async execute(interaction) {
-
+		// Get required/optional command input
 		const dice = interaction.options.getString(`dice`);
 		var mod = interaction.options.getString(`modifier`);
 		const keep = interaction.options.getInteger(`keep`);
 
-		const error = `Command syntax incorrect. See /help for available options.`;
-
+		// Roll dice, throw error if dice syntax is incorrect
+		const error = `Command syntax is incorrect. See /help for available options.`;
 		try {
 			var rolls = getRolls(dice);
 		} catch (e) {
 			return interaction.reply(error);
 		}
 
-		// If 'keep' is not null, shorten array to 'n' highest numbers
+		// If 'keep' option is used, shorten dice roll array to 'n' highest rolls
 		if (keep != null) {
 			try {
 				rolls = getHighest(rolls, keep);
@@ -160,7 +149,7 @@ module.exports = {
 			}
 		}
 		
-		// If 'mod' is not null, convert string to modifier
+		// If 'mod' option is used, convert raw input string to a dice roll modifier
 		if (mod != null) {
 			try {
 				mod = getMod(mod);
@@ -169,6 +158,7 @@ module.exports = {
 			}
 		}
 
+		// Reply with final dice roll
 		const result = getResult(rolls, mod);
 		return interaction.reply(result);
 	},
