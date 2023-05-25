@@ -112,8 +112,8 @@ module.exports = {
 		.setName(`cgen`)
 		.setDescription(`Returns a randomly generated D&D 5e character.`),
 	async execute(interaction) {
-		// If a bot doesn't reply within 3 seconds of receiving a command, the command times out.
-		// This prevents that from happening.
+		// If a bot doesn't reply within 3 seconds of receiving a command, the command times out
+		// This prevents that from happening
 		await interaction.reply({ content: `(Loading) A legendary hero approaches...`, ephemeral: true });
 		
 		// Generate character information
