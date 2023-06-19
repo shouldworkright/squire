@@ -1,5 +1,5 @@
 # Squire - A TTRPG Discord Assistant
-<img src="assets/squire_bust.png" alt="image of a knight" width="200" /><br />
+<img src="assets\img\squire_bust.png" alt="image of a knight" width="200" /><br />
 Squire is a D&D assistant and general roleplaying utility for Discord. Squire provides basic TTRPG gameplay tools, in addition to other features that help enhance your roleplaying experience!
 
 ***
