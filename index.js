@@ -7,7 +7,7 @@ const { token } = require(`./config.json`);
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 // Dynamically retrieve commands from 'commands' directory
-client.commands = new Collection(); // Store command names and modules
+client.commands = new Collection(); // Stores command names and modules
 const foldersPath = path.join(__dirname, `commands`);
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -18,7 +18,7 @@ for (const folder of commandFolders) {
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
-		// Set a new item in the collection with the key as the command name and the value as the exported module
+		// Add a new item to the collection with the command name as the key and the exported command module as the value
 		if (`data` in command && `execute` in command) {
 			client.commands.set(command.data.name, command);
 		} else {
@@ -32,7 +32,7 @@ client.once(Events.ClientReady, c => {
 	console.log(`${c.user.tag} is online!`);
 });
 
-// Handle command executation
+// Handle command execution
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
